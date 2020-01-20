@@ -1,4 +1,6 @@
 # loop.run_in_executor, run in separate thread
+# only for linux
+# mac doesn't have certificate 
 
 import asyncio
 from urllib.request import urlopen
