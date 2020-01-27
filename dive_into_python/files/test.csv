@@ -1,0 +1,4 @@
+car_type;brand;passenger_seats_count;photo_file_name;body_whl;carrying;extra
+spec_machine;Nissan xTtrail;;f1.jpeg;;2.5;
+car;Nissan xTtrail;'h';f1.jpeg;1x2x3;2.5;
+truck;Nissan;;f1.1;;1;

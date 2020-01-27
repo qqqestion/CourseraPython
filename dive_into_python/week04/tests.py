@@ -1,7 +1,7 @@
 import json
 import unittest
 from unittest.mock import patch
-from week04.asteroid import Asteroid
+from dive_into_python.week04.asteroid import Asteroid
 
 
 class TestPython(unittest.TestCase):
