@@ -18,54 +18,46 @@ class Interactive(ABC):
         pass
 
 
-################################################################################
-# My implementations
-################################################################################
-
-
 class AbstractObject(ABC):
 
-    def __init__(self):
-        # FIXME don't know what to do in constructor
-        pass
+    def __init__(self, sprite, position):
+        self.sprite = sprite
+        self.position = position
 
     def draw(self, display):
-        # FIXME
-        pass
-
-
-################################################################################
-# End of my implementations
-################################################################################
+        """
+        :rtype display: ScreenEngine.GameSurface
+        """
+        display.draw_object(self.sprite, self.position)
 
 
 class Ally(AbstractObject, Interactive):
 
     def __init__(self, icon, action, position):
-        self.sprite = icon
+        super().__init__(icon, position)
         self.action = action
-        self.position = position
 
     def interact(self, engine, hero):
+        engine.delete_object(self)
         self.action(engine, hero)
 
 
 class Creature(AbstractObject):
 
     def __init__(self, icon, stats, position):
-        self.sprite = icon
+        super().__init__(icon, position)
         self.stats = stats
-        self.position = position
-        self.calc_max_HP()
+        self.max_hp = 1
+        self.calc_max_hp()
         self.hp = self.max_hp
 
-    def calc_max_HP(self):
+    def calc_max_hp(self):
         self.max_hp = 5 + self.stats["endurance"] * 2
 
 
 class Hero(Creature):
 
-    def __init__(self, stats, icon):
+    def __init__(self, stats: dict, icon: pygame.Surface):
         pos = [1, 1]
         self.level = 1
         self.exp = 0
@@ -74,11 +66,10 @@ class Hero(Creature):
 
     def level_up(self):
         while self.exp >= 100 * (2 ** (self.level - 1)):
-            yield "level up!"
             self.level += 1
             self.stats["strength"] += 2
             self.stats["endurance"] += 2
-            self.calc_max_HP()
+            self.calc_max_hp()
             self.hp = self.max_hp
 
 
@@ -88,6 +79,9 @@ class Effect(Hero):
         self.base = base
         self.stats = self.base.stats.copy()
         self.apply_effect()
+
+    def level_up(self):
+        self.base.level_up()
 
     @property
     def position(self):
@@ -146,46 +140,51 @@ class Effect(Hero):
         pass
 
 
-# FIXME
-# add classes
-
-################################################################################
-# My implementations
-################################################################################
-
-
 class Berserk(Effect):
     """
-    . increase strength, endurance, agility, luck by 7
-    . decrease perception, charisma, intelligence by 3
-    . increase hp by 50
+    . increases hp by 20
+    . increases strength by 5
     """
 
     def apply_effect(self):
-        # FIXME
-        pass
+        self.base.hp += min(self.base.max_hp, self.base.hp + 20)
+        self.stats['strength'] += 5
 
 
 class Blessing(Effect):
     """
-    . increase basic characteristics by 2
+    . increases basic characteristics by 2
     """
 
     def apply_effect(self):
-        # FIXME
-        pass
+        for stat in self.stats.keys():
+            self.stats[stat] += 2
 
 
 class Weakness(Effect):
     """
-    . reduce strength, endurance, and agility by 4
+    . reduces strength, and endurance by 2
     """
 
     def apply_effect(self):
-        # FIXME
-        pass
+        self.stats['strength'] = max(self.stats['strength'] - 2, 1)
+        self.stats['endurance'] = max(self.stats['endurance'] - 2, 1)
 
 
-################################################################################
-# End of my implementations
-################################################################################
+class Enemy(Creature, Interactive):
+
+    def __init__(self, icon, stats, xp, position):
+        super().__init__(icon, stats, position)
+        self.xp = xp
+
+    def interact(self, engine, hero):
+        self.hp -= hero.stats['strength']
+        if self.hp > 0:
+            engine.hero = Weakness(hero)
+            hero.hp -= self.stats['strength']
+            if engine.hero.hp <= 0:
+                engine.kill_hero()
+        else:
+            hero.exp += self.xp
+            engine.hero.level_up()
+            engine.delete_object(self)

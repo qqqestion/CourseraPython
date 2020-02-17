@@ -33,6 +33,8 @@ enemies:
     intelligence: 2
     luck: 1
     experience: 50
+    min-count: 10
+    max-count: 25
   knight:
     sprite: [Enemy_1.png]
     strength: 15
@@ -40,6 +42,8 @@ enemies:
     intelligence: 15
     luck: 10
     experience: 200
+    min-count: 5
+    max-count: 10
   naga:
     sprite: [Naga.png]
     strength: 25
@@ -47,6 +51,8 @@ enemies:
     intelligence: 25
     luck: 10
     experience: 500
+    min-count: 5
+    max-count: 7
   dragon:
     sprite: [dragon.png]
     strength: 50
@@ -54,3 +60,5 @@ enemies:
     intelligence: 50
     luck: 5
     experience: 1000
+    min-count: 1
+    max-count: 6

@@ -1,11 +1,17 @@
 levels:
   - !empty_map {}
   - !special_map
-    rat: 5
-  - !special_map
-    rat: 10
-    knight: 5
-  - !special_map
-    rat: 10
-    knight: 10
+    heal: 10
+    remove: 10
+    bless: 10
+    knight: 100
+    dragon: 20
+    stairs: 1
   - !random_map {}
+  - !special_map
+    rat: 10
+    stairs: 1
+  - !random_map {}
+  - !special_map
+    dragon: 10
+  - !end_map {}

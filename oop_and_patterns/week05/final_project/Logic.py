@@ -1,10 +1,12 @@
-import oop_and_patterns.week05.final_project.Service as Service
+import Service
+import Objects
 
 
 class GameEngine:
     objects = []
     map = None
     hero = None
+    hero_alive = False
     level = -1
     working = True
     subscribers = set()
@@ -26,13 +28,13 @@ class GameEngine:
     # HERO
     def add_hero(self, hero):
         """
-
         :param hero:
         :type hero: Objects.Hero
         :return:
         :rtype: None
         """
         self.hero = hero
+        self.hero_alive = True
 
     def interact(self):
         """
@@ -43,34 +45,40 @@ class GameEngine:
         """
         for obj in self.objects:
             if list(obj.position) == self.hero.position:
-                self.delete_object(obj)
                 obj.interact(self, self.hero)
+
+    def kill_hero(self):
+        self.hero_alive = False
 
     # MOVEMENT
     def move_up(self):
         self.score -= 0.02
-        if self.map[self.hero.position[1] - 1][self.hero.position[0]] == Service.wall:
+        if self.map[self.hero.position[1] - 1][
+            self.hero.position[0]] == Service.wall:
             return
         self.hero.position[1] -= 1
         self.interact()
 
     def move_down(self):
         self.score -= 0.02
-        if self.map[self.hero.position[1] + 1][self.hero.position[0]] == Service.wall:
+        if self.map[self.hero.position[1] + 1][
+            self.hero.position[0]] == Service.wall:
             return
         self.hero.position[1] += 1
         self.interact()
 
     def move_left(self):
         self.score -= 0.02
-        if self.map[self.hero.position[1]][self.hero.position[0] - 1] == Service.wall:
+        if self.map[self.hero.position[1]][
+            self.hero.position[0] - 1] == Service.wall:
             return
         self.hero.position[0] -= 1
         self.interact()
 
     def move_right(self):
         self.score -= 0.02
-        if self.map[self.hero.position[1]][self.hero.position[0] + 1] == Service.wall:
+        if self.map[self.hero.position[1]][
+            self.hero.position[0] + 1] == Service.wall:
             return
         self.hero.position[0] += 1
         self.interact()

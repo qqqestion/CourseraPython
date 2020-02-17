@@ -1,18 +1,9 @@
 import pygame
 import os
-import oop_and_patterns.week05.final_project.Objects as Objects
-import oop_and_patterns.week05.final_project.ScreenEngine as ScreenEngine
-import oop_and_patterns.week05.final_project.Logic as Logic
-import oop_and_patterns.week05.final_project.Service as Service
-
-
-################################################################################
-# My implementations
-################################################################################
-
-################################################################################
-# End of my implementations
-################################################################################
+import Objects
+import ScreenEngine
+import Logic
+import Service
 
 
 SCREEN_DIM = (800, 600)
@@ -24,6 +15,7 @@ KEYBOARD_CONTROL = True
 
 if not KEYBOARD_CONTROL:
     import numpy as np
+
     answer = np.zeros(4, dtype=float)
 
 base_stats = {
@@ -34,26 +26,43 @@ base_stats = {
 }
 
 
-def create_game(sprite_size, is_new):
+def create_game(sprite_size: int, is_new: bool):
     global hero, engine, drawer, iteration
     if is_new:
-        hero = Objects.Hero(base_stats, Service.create_sprite(
-            os.path.join("texture", "Hero.png"), sprite_size))
+        hero = Objects.Hero(
+            base_stats,
+            Objects.create_sprite(
+                os.path.join("texture", "Hero.png"),
+                sprite_size
+            )
+        )
         engine = Logic.GameEngine()
         Service.service_init(sprite_size)
         Service.reload_game(engine, hero)
-        with ScreenEngine as SE:
-            drawer = SE.GameSurface((640, 480), pygame.SRCALPHA, (0, 480),
-                                    SE.ProgressBar((640, 120), (640, 0),
-                                                   SE.InfoWindow((160, 600), (50, 50),
-                                                                 SE.HelpWindow((700, 500), pygame.SRCALPHA, (0, 0),
-                                                                               SE.ScreenHandle(
-                                                                                   (0, 0))
-                                                                               ))))
+        drawer = ScreenEngine.GameSurface(
+            (640, 480),
+            pygame.SRCALPHA,
+            (0, 480),
+            ScreenEngine.ProgressBar((640, 120),
+                                     (640, 0),
+                                     ScreenEngine.InfoWindow(
+                                         (160, 600),
+                                         (50, 50),
+                                         ScreenEngine.HelpWindow(
+                                             (700, 500),
+                                             pygame.SRCALPHA,
+                                             (0, 0),
+                                             ScreenEngine.ScreenHandle(
+                                                 (0, 0)
+                                             )
+                                         )
+                                     )
+                                     )
+        )
 
     else:
         engine.sprite_size = sprite_size
-        hero.sprite = Service.create_sprite(
+        hero.sprite = Objects.create_sprite(
             os.path.join("texture", "Hero.png"), sprite_size)
         Service.service_init(sprite_size, False)
 
@@ -64,7 +73,7 @@ def create_game(sprite_size, is_new):
     iteration = 0
 
 
-size = 60
+size = 50
 create_game(size, True)
 
 while engine.working:
@@ -76,10 +85,10 @@ while engine.working:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_h:
                     engine.show_help = not engine.show_help
-                if event.key == pygame.K_KP_PLUS:
+                if event.key == pygame.K_2:
                     size = size + 1
                     create_game(size, False)
-                if event.key == pygame.K_KP_MINUS:
+                if event.key == pygame.K_1:
                     size = size - 1
                     create_game(size, False)
                 if event.key == pygame.K_r:
@@ -99,6 +108,8 @@ while engine.working:
                     elif event.key == pygame.K_RIGHT:
                         engine.move_right()
                         iteration += 1
+                    if not engine.hero_alive:
+                        create_game(size, True)
                 else:
                     if event.key == pygame.K_RETURN:
                         create_game()
@@ -130,4 +141,5 @@ while engine.working:
 pygame.display.quit()
 pygame.quit()
 exit(0)
+
 
